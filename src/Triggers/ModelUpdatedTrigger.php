@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Triggers;
+namespace Pstoute\WorkflowConductor\Triggers;
 
 use Illuminate\Database\Eloquent\Model;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class ModelUpdatedTrigger extends AbstractTrigger
 {

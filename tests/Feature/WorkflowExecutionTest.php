@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Tests\Feature;
+namespace Pstoute\WorkflowConductor\Tests\Feature;
 
 use Illuminate\Support\Facades\Event;
-use Pstoute\LaravelWorkflows\Actions\CustomAction;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Events\ActionExecuted;
-use Pstoute\LaravelWorkflows\Events\WorkflowCompleted;
-use Pstoute\LaravelWorkflows\Events\WorkflowStarted;
-use Pstoute\LaravelWorkflows\Facades\Workflows;
-use Pstoute\LaravelWorkflows\Models\Workflow;
-use Pstoute\LaravelWorkflows\Models\WorkflowAction;
-use Pstoute\LaravelWorkflows\Models\WorkflowCondition;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecution;
-use Pstoute\LaravelWorkflows\Tests\TestCase;
+use Pstoute\WorkflowConductor\Actions\CustomAction;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Events\ActionExecuted;
+use Pstoute\WorkflowConductor\Events\WorkflowCompleted;
+use Pstoute\WorkflowConductor\Events\WorkflowStarted;
+use Pstoute\WorkflowConductor\Facades\Conductor;
+use Pstoute\WorkflowConductor\Models\Workflow;
+use Pstoute\WorkflowConductor\Models\WorkflowAction;
+use Pstoute\WorkflowConductor\Models\WorkflowCondition;
+use Pstoute\WorkflowConductor\Models\WorkflowExecution;
+use Pstoute\WorkflowConductor\Tests\TestCase;
 
 class WorkflowExecutionTest extends TestCase
 {
@@ -48,7 +48,7 @@ class WorkflowExecutionTest extends TestCase
 
         $context = new WorkflowContext(['name' => 'John']);
 
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
 
         $this->assertTrue($result->isSuccess());
         $this->assertCount(1, $result->actionResults);
@@ -92,7 +92,7 @@ class WorkflowExecutionTest extends TestCase
 
         $context = new WorkflowContext(['status' => 'inactive']);
 
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
 
         $this->assertTrue($result->isSkipped());
         $this->assertEmpty($result->actionResults);
@@ -127,7 +127,7 @@ class WorkflowExecutionTest extends TestCase
 
         $context = new WorkflowContext(['amount' => 150]);
 
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
 
         $this->assertTrue($result->isSuccess());
         $this->assertCount(1, $result->actionResults);
@@ -173,12 +173,12 @@ class WorkflowExecutionTest extends TestCase
 
         // Both conditions met
         $context = new WorkflowContext(['status' => 'active', 'amount' => 100]);
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
         $this->assertTrue($result->isSuccess());
 
         // One condition not met
         $context = new WorkflowContext(['status' => 'active', 'amount' => 30]);
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
         $this->assertTrue($result->isSkipped());
     }
 
@@ -222,17 +222,17 @@ class WorkflowExecutionTest extends TestCase
 
         // First OR condition met
         $context = new WorkflowContext(['type' => 'premium']);
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
         $this->assertTrue($result->isSuccess());
 
         // Second OR condition met
         $context = new WorkflowContext(['type' => 'enterprise']);
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
         $this->assertTrue($result->isSuccess());
 
         // Neither condition met
         $context = new WorkflowContext(['type' => 'basic']);
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
         $this->assertTrue($result->isSkipped());
     }
 
@@ -285,7 +285,7 @@ class WorkflowExecutionTest extends TestCase
         ]);
 
         $context = new WorkflowContext([]);
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
 
         $this->assertTrue($result->isSuccess());
         $this->assertCount(3, $result->actionResults);
@@ -318,7 +318,7 @@ class WorkflowExecutionTest extends TestCase
         ]);
 
         $context = new WorkflowContext([]);
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
 
         $this->assertFalse($result->isSuccess()); // Overall fails because one action failed
         $this->assertCount(2, $result->actionResults);
@@ -358,7 +358,7 @@ class WorkflowExecutionTest extends TestCase
         ]);
 
         $context = new WorkflowContext([]);
-        $result = Workflows::execute($workflow->id, $context);
+        $result = Conductor::execute($workflow->id, $context);
 
         $this->assertFalse($result->isSuccess());
         $this->assertCount(1, $result->actionResults);
@@ -400,7 +400,7 @@ class WorkflowExecutionTest extends TestCase
             ],
         ]);
 
-        Workflows::execute($workflow->id, $context);
+        Conductor::execute($workflow->id, $context);
 
         $this->assertEquals('Hello John!', $receivedConfig['message']);
         $this->assertEquals('john@example.com', $receivedConfig['email']);
@@ -408,14 +408,14 @@ class WorkflowExecutionTest extends TestCase
 
     public function test_it_does_not_execute_inactive_workflow(): void
     {
-        $this->expectException(\Pstoute\LaravelWorkflows\Exceptions\WorkflowException::class);
+        $this->expectException(\Pstoute\WorkflowConductor\Exceptions\WorkflowException::class);
 
         $workflow = Workflow::create([
             'name' => 'Inactive Workflow',
             'is_active' => false,
         ]);
 
-        Workflows::execute($workflow->id, new WorkflowContext([]));
+        Conductor::execute($workflow->id, new WorkflowContext([]));
     }
 
     public function test_it_creates_execution_logs(): void
@@ -435,7 +435,7 @@ class WorkflowExecutionTest extends TestCase
         ]);
 
         $context = new WorkflowContext(['input' => 'value']);
-        Workflows::execute($workflow->id, $context);
+        Conductor::execute($workflow->id, $context);
 
         $execution = WorkflowExecution::where('workflow_id', $workflow->id)->first();
 

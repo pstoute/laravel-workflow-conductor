@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Models;
+namespace Pstoute\WorkflowConductor\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,12 +29,12 @@ class WorkflowTrigger extends Model
 
     public function getTable(): string
     {
-        return config('workflows.database.table_prefix', 'workflow_') . 'triggers';
+        return config('workflow-conductor.database.table_prefix', 'workflow_') . 'triggers';
     }
 
     public function getConnectionName(): ?string
     {
-        return config('workflows.database.connection') ?? parent::getConnectionName();
+        return config('workflow-conductor.database.connection') ?? parent::getConnectionName();
     }
 
     /**

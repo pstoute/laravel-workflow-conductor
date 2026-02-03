@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class HttpRequestAction extends AbstractAction
 {
@@ -36,7 +36,7 @@ class HttpRequestAction extends AbstractAction
         $body = $config['body'] ?? null;
         $query = $config['query'] ?? [];
         $headers = $config['headers'] ?? [];
-        $timeout = $config['timeout'] ?? config('workflows.actions.http_request.timeout', 30);
+        $timeout = $config['timeout'] ?? config('workflow-conductor.actions.http_request.timeout', 30);
         $responseKey = $config['response_key'] ?? 'http_response';
         $auth = $config['auth'] ?? null;
 
@@ -45,7 +45,7 @@ class HttpRequestAction extends AbstractAction
         }
 
         // Check allowed hosts
-        $allowedHosts = config('workflows.actions.http_request.allowed_hosts', ['*']);
+        $allowedHosts = config('workflow-conductor.actions.http_request.allowed_hosts', ['*']);
         if (! $this->isHostAllowed($url, $allowedHosts)) {
             return ActionResult::failure('Host not in allowed hosts list');
         }

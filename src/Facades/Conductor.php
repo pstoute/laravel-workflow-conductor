@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Facades;
+namespace Pstoute\WorkflowConductor\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Pstoute\LaravelWorkflows\Contracts\ActionInterface;
-use Pstoute\LaravelWorkflows\Contracts\ConditionInterface;
-use Pstoute\LaravelWorkflows\Contracts\TriggerInterface;
-use Pstoute\LaravelWorkflows\Data\ExecutionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\WorkflowBuilder;
-use Pstoute\LaravelWorkflows\WorkflowManager;
+use Pstoute\WorkflowConductor\Contracts\ActionInterface;
+use Pstoute\WorkflowConductor\Contracts\ConditionInterface;
+use Pstoute\WorkflowConductor\Contracts\TriggerInterface;
+use Pstoute\WorkflowConductor\Data\ExecutionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\WorkflowBuilder;
+use Pstoute\WorkflowConductor\WorkflowManager;
 
 /**
  * @method static void registerTrigger(TriggerInterface $trigger)
@@ -29,9 +29,9 @@ use Pstoute\LaravelWorkflows\WorkflowManager;
  * @method static WorkflowBuilder create()
  * @method static \Illuminate\Database\Eloquent\Builder executions()
  *
- * @see \Pstoute\LaravelWorkflows\WorkflowManager
+ * @see \Pstoute\WorkflowConductor\WorkflowManager
  */
-class Workflows extends Facade
+class Conductor extends Facade
 {
     protected static function getFacadeAccessor(): string
     {

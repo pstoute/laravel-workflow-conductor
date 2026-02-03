@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Engine;
+namespace Pstoute\WorkflowConductor\Engine;
 
-use Pstoute\LaravelWorkflows\Contracts\ActionInterface;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Exceptions\ActionException;
-use Pstoute\LaravelWorkflows\Models\WorkflowAction;
-use Pstoute\LaravelWorkflows\Support\VariableInterpolator;
+use Pstoute\WorkflowConductor\Contracts\ActionInterface;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Exceptions\ActionException;
+use Pstoute\WorkflowConductor\Models\WorkflowAction;
+use Pstoute\WorkflowConductor\Support\VariableInterpolator;
 
 class ActionExecutor
 {
@@ -139,6 +139,6 @@ class ActionExecutor
     {
         $action = $this->get($type);
 
-        return $action?->getTimeout() ?? config('workflows.execution.timeout', 300);
+        return $action?->getTimeout() ?? config('workflow-conductor.execution.timeout', 300);
     }
 }

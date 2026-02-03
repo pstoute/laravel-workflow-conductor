@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Tests;
+namespace Pstoute\WorkflowConductor\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Pstoute\LaravelWorkflows\WorkflowServiceProvider;
+use Pstoute\WorkflowConductor\WorkflowConductorServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
@@ -24,7 +24,7 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
-            WorkflowServiceProvider::class,
+            WorkflowConductorServiceProvider::class,
         ];
     }
 
@@ -35,7 +35,7 @@ abstract class TestCase extends Orchestra
     protected function getPackageAliases($app): array
     {
         return [
-            'Workflows' => \Pstoute\LaravelWorkflows\Facades\Workflows::class,
+            'Conductor' => \Pstoute\WorkflowConductor\Facades\Conductor::class,
         ];
     }
 
@@ -51,8 +51,8 @@ abstract class TestCase extends Orchestra
             'prefix' => '',
         ]);
 
-        $app['config']->set('workflows.database.table_prefix', 'workflow_');
-        $app['config']->set('workflows.execution.default_mode', 'sync');
+        $app['config']->set('workflow-conductor.database.table_prefix', 'workflow_');
+        $app['config']->set('workflow-conductor.execution.default_mode', 'sync');
     }
 
     /**

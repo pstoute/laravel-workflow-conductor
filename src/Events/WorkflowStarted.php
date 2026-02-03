@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Events;
+namespace Pstoute\WorkflowConductor\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Models\Workflow;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecution;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Models\Workflow;
+use Pstoute\WorkflowConductor\Models\WorkflowExecution;
 
 class WorkflowStarted
 {

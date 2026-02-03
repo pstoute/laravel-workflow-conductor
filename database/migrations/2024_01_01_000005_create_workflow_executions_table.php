@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $prefix = config('workflows.database.table_prefix', 'workflow_');
+        $prefix = config('workflow-conductor.database.table_prefix', 'workflow_');
 
         Schema::create($prefix . 'executions', function (Blueprint $table) use ($prefix) {
             $table->id();
@@ -32,6 +32,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists(config('workflows.database.table_prefix', 'workflow_') . 'executions');
+        Schema::dropIfExists(config('workflow-conductor.database.table_prefix', 'workflow_') . 'executions');
     }
 };

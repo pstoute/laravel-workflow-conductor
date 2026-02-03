@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Tests\Feature;
+namespace Pstoute\WorkflowConductor\Tests\Feature;
 
-use Pstoute\LaravelWorkflows\Facades\Workflows;
-use Pstoute\LaravelWorkflows\Models\Workflow;
-use Pstoute\LaravelWorkflows\Tests\TestCase;
+use Pstoute\WorkflowConductor\Facades\Conductor;
+use Pstoute\WorkflowConductor\Models\Workflow;
+use Pstoute\WorkflowConductor\Tests\TestCase;
 
 class WorkflowBuilderTest extends TestCase
 {
     public function test_it_creates_workflow_with_fluent_builder(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('Welcome Email')
             ->description('Send welcome email to new users')
             ->trigger('model.created', ['model' => 'App\\Models\\User'])
@@ -45,7 +45,7 @@ class WorkflowBuilderTest extends TestCase
 
     public function test_it_creates_workflow_with_multiple_conditions(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('High Value Order Alert')
             ->trigger('model.created', ['model' => 'App\\Models\\Order'])
             ->when('total', 'greater_than', 1000)
@@ -62,7 +62,7 @@ class WorkflowBuilderTest extends TestCase
 
     public function test_it_creates_workflow_with_or_conditions(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('VIP Customer Alert')
             ->trigger('model.created', ['model' => 'App\\Models\\Order'])
             ->when('customer.type', 'equals', 'vip')
@@ -79,7 +79,7 @@ class WorkflowBuilderTest extends TestCase
 
     public function test_it_creates_workflow_with_multiple_actions(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('Multi Action Workflow')
             ->trigger('model.created', ['model' => 'App\\Models\\Lead'])
             ->sendEmail('{{ model.email }}', 'Welcome!', 'Thanks for signing up!')
@@ -95,7 +95,7 @@ class WorkflowBuilderTest extends TestCase
 
     public function test_it_creates_workflow_with_delay_action(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('Follow Up Email')
             ->trigger('model.created', ['model' => 'App\\Models\\Lead'])
             ->delay(3, 'days')
@@ -110,7 +110,7 @@ class WorkflowBuilderTest extends TestCase
 
     public function test_it_creates_inactive_workflow(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('Inactive Workflow')
             ->active(false)
             ->trigger('manual')
@@ -122,7 +122,7 @@ class WorkflowBuilderTest extends TestCase
 
     public function test_it_creates_workflow_with_settings(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('Workflow with Settings')
             ->settings([
                 'max_retries' => 5,
@@ -138,7 +138,7 @@ class WorkflowBuilderTest extends TestCase
 
     public function test_it_creates_workflow_with_model_actions(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('Order Processing')
             ->trigger('model.created', ['model' => 'App\\Models\\Order'])
             ->createModel('App\\Models\\Invoice', [
@@ -157,7 +157,7 @@ class WorkflowBuilderTest extends TestCase
 
     public function test_it_sets_action_order_correctly(): void
     {
-        $workflow = Workflows::create()
+        $workflow = Conductor::create()
             ->name('Ordered Actions')
             ->trigger('manual')
             ->action('custom', ['handler' => 'first'])

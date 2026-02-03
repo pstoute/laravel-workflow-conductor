@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
 use GuzzleHttp\Client;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class SlackMessageAction extends AbstractAction
 {
@@ -30,7 +30,7 @@ class SlackMessageAction extends AbstractAction
      */
     public function execute(WorkflowContext $context, array $config): ActionResult
     {
-        $webhookUrl = $config['webhook_url'] ?? config('workflows.actions.slack.webhook_url');
+        $webhookUrl = $config['webhook_url'] ?? config('workflow-conductor.actions.slack.webhook_url');
         $message = $config['message'] ?? null;
         $channel = $config['channel'] ?? null;
         $username = $config['username'] ?? 'Workflow Bot';

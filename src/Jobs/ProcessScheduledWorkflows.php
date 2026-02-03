@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Jobs;
+namespace Pstoute\WorkflowConductor\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,10 +10,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Engine\TriggerManager;
-use Pstoute\LaravelWorkflows\Engine\WorkflowEngine;
-use Pstoute\LaravelWorkflows\Models\Workflow;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Engine\TriggerManager;
+use Pstoute\WorkflowConductor\Engine\WorkflowEngine;
+use Pstoute\WorkflowConductor\Models\Workflow;
 
 class ProcessScheduledWorkflows implements ShouldQueue
 {
@@ -57,12 +57,12 @@ class ProcessScheduledWorkflows implements ShouldQueue
                         // Execute asynchronously to avoid blocking
                         $engine->executeAsync($workflow, $context);
 
-                        Log::channel(config('workflows.logging.channel', 'stack'))->info(
+                        Log::channel(config('workflow-conductor.logging.channel', 'stack'))->info(
                             "Scheduled workflow triggered: {$workflow->name}",
                             ['workflow_id' => $workflow->id]
                         );
                     } catch (\Throwable $e) {
-                        Log::channel(config('workflows.logging.channel', 'stack'))->error(
+                        Log::channel(config('workflow-conductor.logging.channel', 'stack'))->error(
                             "Failed to trigger scheduled workflow: {$e->getMessage()}",
                             [
                                 'workflow_id' => $workflow->id,

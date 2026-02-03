@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Triggers;
+namespace Pstoute\WorkflowConductor\Triggers;
 
-use Pstoute\LaravelWorkflows\Contracts\TriggerInterface;
+use Pstoute\WorkflowConductor\Contracts\TriggerInterface;
 
 abstract class AbstractTrigger implements TriggerInterface
 {

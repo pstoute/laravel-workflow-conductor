@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Models;
+namespace Pstoute\WorkflowConductor\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -39,12 +39,12 @@ class Workflow extends Model
 
     public function getTable(): string
     {
-        return config('workflows.database.table_prefix', 'workflow_') . 'workflows';
+        return config('workflow-conductor.database.table_prefix', 'workflow_') . 'workflows';
     }
 
     public function getConnectionName(): ?string
     {
-        return config('workflows.database.connection') ?? parent::getConnectionName();
+        return config('workflow-conductor.database.connection') ?? parent::getConnectionName();
     }
 
     /**

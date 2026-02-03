@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Conditions;
+namespace Pstoute\WorkflowConductor\Conditions;
 
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class CustomCondition extends AbstractCondition
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Tests\Unit;
+namespace Pstoute\WorkflowConductor\Tests\Unit;
 
-use Pstoute\LaravelWorkflows\Engine\ConditionEvaluator;
-use Pstoute\LaravelWorkflows\Tests\TestCase;
+use Pstoute\WorkflowConductor\Engine\ConditionEvaluator;
+use Pstoute\WorkflowConductor\Tests\TestCase;
 
 class ConditionEvaluatorTest extends TestCase
 {

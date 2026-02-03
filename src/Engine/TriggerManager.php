@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Engine;
+namespace Pstoute\WorkflowConductor\Engine;
 
 use Illuminate\Support\Collection;
-use Pstoute\LaravelWorkflows\Contracts\TriggerInterface;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Exceptions\TriggerException;
-use Pstoute\LaravelWorkflows\Models\Workflow;
-use Pstoute\LaravelWorkflows\Models\WorkflowTrigger;
+use Pstoute\WorkflowConductor\Contracts\TriggerInterface;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Exceptions\TriggerException;
+use Pstoute\WorkflowConductor\Models\Workflow;
+use Pstoute\WorkflowConductor\Models\WorkflowTrigger;
 
 class TriggerManager
 {

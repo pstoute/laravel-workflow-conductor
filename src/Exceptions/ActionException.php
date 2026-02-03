@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Exceptions;
+namespace Pstoute\WorkflowConductor\Exceptions;
 
 use Exception;
-use Pstoute\LaravelWorkflows\Models\WorkflowAction;
+use Pstoute\WorkflowConductor\Models\WorkflowAction;
 
 class ActionException extends Exception
 {

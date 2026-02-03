@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Conditions;
+namespace Pstoute\WorkflowConductor\Conditions;
 
-use Pstoute\LaravelWorkflows\Contracts\ConditionInterface;
+use Pstoute\WorkflowConductor\Contracts\ConditionInterface;
 
 abstract class AbstractCondition implements ConditionInterface
 {

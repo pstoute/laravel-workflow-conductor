@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Tests\Unit;
+namespace Pstoute\WorkflowConductor\Tests\Unit;
 
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Support\VariableInterpolator;
-use Pstoute\LaravelWorkflows\Tests\TestCase;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Support\VariableInterpolator;
+use Pstoute\WorkflowConductor\Tests\TestCase;
 
 class VariableInterpolatorTest extends TestCase
 {

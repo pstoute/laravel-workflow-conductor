@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows;
+namespace Pstoute\WorkflowConductor;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Builder;
-use Pstoute\LaravelWorkflows\Contracts\ActionInterface;
-use Pstoute\LaravelWorkflows\Contracts\ConditionInterface;
-use Pstoute\LaravelWorkflows\Contracts\TriggerInterface;
-use Pstoute\LaravelWorkflows\Data\ExecutionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Engine\ActionExecutor;
-use Pstoute\LaravelWorkflows\Engine\ConditionEvaluator;
-use Pstoute\LaravelWorkflows\Engine\TriggerManager;
-use Pstoute\LaravelWorkflows\Engine\WorkflowEngine;
-use Pstoute\LaravelWorkflows\Exceptions\WorkflowException;
-use Pstoute\LaravelWorkflows\Models\Workflow;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecution;
+use Pstoute\WorkflowConductor\Contracts\ActionInterface;
+use Pstoute\WorkflowConductor\Contracts\ConditionInterface;
+use Pstoute\WorkflowConductor\Contracts\TriggerInterface;
+use Pstoute\WorkflowConductor\Data\ExecutionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Engine\ActionExecutor;
+use Pstoute\WorkflowConductor\Engine\ConditionEvaluator;
+use Pstoute\WorkflowConductor\Engine\TriggerManager;
+use Pstoute\WorkflowConductor\Engine\WorkflowEngine;
+use Pstoute\WorkflowConductor\Exceptions\WorkflowException;
+use Pstoute\WorkflowConductor\Models\Workflow;
+use Pstoute\WorkflowConductor\Models\WorkflowExecution;
 
 class WorkflowManager
 {
@@ -157,7 +157,7 @@ class WorkflowManager
 
         $workflows = $this->triggerManager->findMatchingWorkflows($triggerType, $context);
 
-        $mode = config('workflows.execution.default_mode', 'async');
+        $mode = config('workflow-conductor.execution.default_mode', 'async');
 
         foreach ($workflows as $workflow) {
             if ($mode === 'async') {

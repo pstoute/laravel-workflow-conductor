@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class WebhookAction extends AbstractAction
 {
@@ -35,8 +35,8 @@ class WebhookAction extends AbstractAction
         $method = strtoupper($config['method'] ?? 'POST');
         $payload = $config['payload'] ?? $config['data'] ?? [];
         $headers = $config['headers'] ?? [];
-        $timeout = $config['timeout'] ?? config('workflows.actions.webhook.timeout', 30);
-        $verifySSL = $config['verify_ssl'] ?? config('workflows.actions.webhook.verify_ssl', true);
+        $timeout = $config['timeout'] ?? config('workflow-conductor.actions.webhook.timeout', 30);
+        $verifySSL = $config['verify_ssl'] ?? config('workflow-conductor.actions.webhook.verify_ssl', true);
 
         if (empty($url)) {
             return ActionResult::failure('No webhook URL specified');
@@ -100,7 +100,7 @@ class WebhookAction extends AbstractAction
 
     public function getTimeout(): int
     {
-        return config('workflows.actions.webhook.timeout', 30);
+        return config('workflow-conductor.actions.webhook.timeout', 30);
     }
 
     /**

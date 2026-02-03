@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Conditions;
+namespace Pstoute\WorkflowConductor\Conditions;
 
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Engine\ConditionEvaluator;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Engine\ConditionEvaluator;
 
 class FieldCondition extends AbstractCondition
 {

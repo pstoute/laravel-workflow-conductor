@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Events;
+namespace Pstoute\WorkflowConductor\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Pstoute\LaravelWorkflows\Data\ExecutionResult;
-use Pstoute\LaravelWorkflows\Models\Workflow;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecution;
+use Pstoute\WorkflowConductor\Data\ExecutionResult;
+use Pstoute\WorkflowConductor\Models\Workflow;
+use Pstoute\WorkflowConductor\Models\WorkflowExecution;
 
 class WorkflowFailed
 {

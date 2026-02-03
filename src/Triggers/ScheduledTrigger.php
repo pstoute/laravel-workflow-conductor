@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Triggers;
+namespace Pstoute\WorkflowConductor\Triggers;
 
 use Cron\CronExpression;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class ScheduledTrigger extends AbstractTrigger
 {

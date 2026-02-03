@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Conditions;
+namespace Pstoute\WorkflowConductor\Conditions;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class RelationCondition extends AbstractCondition
 {

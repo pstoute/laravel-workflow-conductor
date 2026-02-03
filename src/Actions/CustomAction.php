@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class CustomAction extends AbstractAction
 {
@@ -101,7 +101,7 @@ class CustomAction extends AbstractAction
                 }
 
                 // Check if it implements ActionInterface
-                if ($instance instanceof \Pstoute\LaravelWorkflows\Contracts\ActionInterface) {
+                if ($instance instanceof \Pstoute\WorkflowConductor\Contracts\ActionInterface) {
                     return $instance->execute($context, $params);
                 }
 

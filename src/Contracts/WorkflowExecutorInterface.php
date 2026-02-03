@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Contracts;
+namespace Pstoute\WorkflowConductor\Contracts;
 
-use Pstoute\LaravelWorkflows\Data\ExecutionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Models\Workflow;
+use Pstoute\WorkflowConductor\Data\ExecutionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Models\Workflow;
 
 interface WorkflowExecutorInterface
 {

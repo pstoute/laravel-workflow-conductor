@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Data;
+namespace Pstoute\WorkflowConductor\Data;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecution;
+use Pstoute\WorkflowConductor\Models\WorkflowExecution;
 use Throwable;
 
 /**

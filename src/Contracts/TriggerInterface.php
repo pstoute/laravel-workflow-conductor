@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Contracts;
+namespace Pstoute\WorkflowConductor\Contracts;
 
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 interface TriggerInterface
 {

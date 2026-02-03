@@ -1,6 +1,6 @@
 {
-    "name": "pstoute/laravel-workflows",
-    "description": "A powerful, Laravel-native workflow automation engine with triggers, conditions, and actions",
+    "name": "pstoute/laravel-workflow-conductor",
+    "description": "A powerful, Laravel-native workflow conductor that lets users build automation with triggers, conditions, and actions",
     "keywords": [
         "laravel",
         "workflow",
@@ -11,7 +11,7 @@
         "zapier",
         "n8n"
     ],
-    "homepage": "https://github.com/pstoute/laravel-workflows",
+    "homepage": "https://github.com/pstoute/laravel-workflow-conductor",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -36,21 +36,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Pstoute\\LaravelWorkflows\\": "src/"
+            "Pstoute\\WorkflowConductor\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Pstoute\\LaravelWorkflows\\Tests\\": "tests/"
+            "Pstoute\\WorkflowConductor\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Pstoute\\LaravelWorkflows\\WorkflowServiceProvider"
+                "Pstoute\\WorkflowConductor\\WorkflowConductorServiceProvider"
             ],
             "aliases": {
-                "Workflows": "Pstoute\\LaravelWorkflows\\Facades\\Workflows"
+                "Conductor": "Pstoute\\WorkflowConductor\\Facades\\Conductor"
             }
         }
     },

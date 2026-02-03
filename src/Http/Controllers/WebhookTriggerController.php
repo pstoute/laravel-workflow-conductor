@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Http\Controllers;
+namespace Pstoute\WorkflowConductor\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Facades\Workflows;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Facades\Conductor;
 
 class WebhookTriggerController extends Controller
 {
@@ -29,7 +29,7 @@ class WebhookTriggerController extends Controller
         ]);
 
         try {
-            Workflows::trigger('webhook', $context);
+            Conductor::trigger('webhook', $context);
 
             return response()->json([
                 'success' => true,

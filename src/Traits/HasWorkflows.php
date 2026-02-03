@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Traits;
+namespace Pstoute\WorkflowConductor\Traits;
 
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Facades\Workflows;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Facades\Conductor;
 
 /**
  * Add this trait to Eloquent models to automatically trigger workflows on model events.
@@ -67,7 +67,7 @@ trait HasWorkflows
             'model_id' => $this->getKey(),
         ]);
 
-        Workflows::trigger($triggerType, $context);
+        Conductor::trigger($triggerType, $context);
     }
 
     /**
@@ -85,17 +85,17 @@ trait HasWorkflows
             'model_id' => $this->getKey(),
         ]);
 
-        Workflows::executeAsync($workflowId, $context);
+        Conductor::executeAsync($workflowId, $context);
     }
 
     /**
      * Get all workflow executions for this model.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \Pstoute\LaravelWorkflows\Models\WorkflowExecution>
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Pstoute\WorkflowConductor\Models\WorkflowExecution>
      */
     public function getWorkflowExecutions()
     {
-        return Workflows::executions()
+        return Conductor::executions()
             ->whereJsonContains('trigger_data->metadata->model_class', static::class)
             ->whereJsonContains('trigger_data->metadata->model_id', $this->getKey())
             ->get();

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Exceptions;
+namespace Pstoute\WorkflowConductor\Exceptions;
 
 use Exception;
 

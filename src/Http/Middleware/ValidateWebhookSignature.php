@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Http\Middleware;
+namespace Pstoute\WorkflowConductor\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class ValidateWebhookSignature
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $secret = config('workflows.webhooks.signing_secret');
+        $secret = config('workflow-conductor.webhooks.signing_secret');
 
         // If no secret is configured, skip validation
         if (empty($secret)) {
@@ -56,7 +56,7 @@ class ValidateWebhookSignature
      */
     public static function sign(string $payload, ?string $secret = null): string
     {
-        $secret = $secret ?? config('workflows.webhooks.signing_secret');
+        $secret = $secret ?? config('workflow-conductor.webhooks.signing_secret');
 
         return 'sha256=' . hash_hmac('sha256', $payload, $secret);
     }

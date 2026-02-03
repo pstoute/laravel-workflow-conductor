@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class CreateModelAction extends AbstractAction
 {
@@ -42,7 +42,7 @@ class CreateModelAction extends AbstractAction
         }
 
         // Check allowed models
-        $allowedModels = config('workflows.actions.create_model.allowed_models', ['*']);
+        $allowedModels = config('workflow-conductor.actions.create_model.allowed_models', ['*']);
         if (! $this->isModelAllowed($modelClass, $allowedModels)) {
             return ActionResult::failure("Model '{$modelClass}' is not in the allowed list");
         }

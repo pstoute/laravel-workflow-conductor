@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Conditions;
+namespace Pstoute\WorkflowConductor\Conditions;
 
 use Carbon\Carbon;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class DateCondition extends AbstractCondition
 {

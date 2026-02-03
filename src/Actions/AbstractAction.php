@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
-use Pstoute\LaravelWorkflows\Contracts\ActionInterface;
+use Pstoute\WorkflowConductor\Contracts\ActionInterface;
 
 abstract class AbstractAction implements ActionInterface
 {
@@ -15,7 +15,7 @@ abstract class AbstractAction implements ActionInterface
 
     public function getTimeout(): int
     {
-        return config('workflows.execution.timeout', 300);
+        return config('workflow-conductor.execution.timeout', 300);
     }
 
     /**

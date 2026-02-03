@@ -2,43 +2,43 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows;
+namespace Pstoute\WorkflowConductor;
 
 use Illuminate\Support\ServiceProvider;
-use Pstoute\LaravelWorkflows\Actions\CreateModelAction;
-use Pstoute\LaravelWorkflows\Actions\CustomAction;
-use Pstoute\LaravelWorkflows\Actions\DelayAction;
-use Pstoute\LaravelWorkflows\Actions\DeleteModelAction;
-use Pstoute\LaravelWorkflows\Actions\HttpRequestAction;
-use Pstoute\LaravelWorkflows\Actions\SendEmailAction;
-use Pstoute\LaravelWorkflows\Actions\SendNotificationAction;
-use Pstoute\LaravelWorkflows\Actions\SlackMessageAction;
-use Pstoute\LaravelWorkflows\Actions\UpdateModelAction;
-use Pstoute\LaravelWorkflows\Actions\WebhookAction;
-use Pstoute\LaravelWorkflows\Conditions\CustomCondition;
-use Pstoute\LaravelWorkflows\Conditions\DateCondition;
-use Pstoute\LaravelWorkflows\Conditions\FieldCondition;
-use Pstoute\LaravelWorkflows\Conditions\RelationCondition;
-use Pstoute\LaravelWorkflows\Contracts\WorkflowExecutorInterface;
-use Pstoute\LaravelWorkflows\Engine\WorkflowEngine;
-use Pstoute\LaravelWorkflows\Triggers\ManualTrigger;
-use Pstoute\LaravelWorkflows\Triggers\ModelCreatedTrigger;
-use Pstoute\LaravelWorkflows\Triggers\ModelDeletedTrigger;
-use Pstoute\LaravelWorkflows\Triggers\ModelUpdatedTrigger;
-use Pstoute\LaravelWorkflows\Triggers\ScheduledTrigger;
-use Pstoute\LaravelWorkflows\Triggers\WebhookTrigger;
+use Pstoute\WorkflowConductor\Actions\CreateModelAction;
+use Pstoute\WorkflowConductor\Actions\CustomAction;
+use Pstoute\WorkflowConductor\Actions\DelayAction;
+use Pstoute\WorkflowConductor\Actions\DeleteModelAction;
+use Pstoute\WorkflowConductor\Actions\HttpRequestAction;
+use Pstoute\WorkflowConductor\Actions\SendEmailAction;
+use Pstoute\WorkflowConductor\Actions\SendNotificationAction;
+use Pstoute\WorkflowConductor\Actions\SlackMessageAction;
+use Pstoute\WorkflowConductor\Actions\UpdateModelAction;
+use Pstoute\WorkflowConductor\Actions\WebhookAction;
+use Pstoute\WorkflowConductor\Conditions\CustomCondition;
+use Pstoute\WorkflowConductor\Conditions\DateCondition;
+use Pstoute\WorkflowConductor\Conditions\FieldCondition;
+use Pstoute\WorkflowConductor\Conditions\RelationCondition;
+use Pstoute\WorkflowConductor\Contracts\WorkflowExecutorInterface;
+use Pstoute\WorkflowConductor\Engine\WorkflowEngine;
+use Pstoute\WorkflowConductor\Triggers\ManualTrigger;
+use Pstoute\WorkflowConductor\Triggers\ModelCreatedTrigger;
+use Pstoute\WorkflowConductor\Triggers\ModelDeletedTrigger;
+use Pstoute\WorkflowConductor\Triggers\ModelUpdatedTrigger;
+use Pstoute\WorkflowConductor\Triggers\ScheduledTrigger;
+use Pstoute\WorkflowConductor\Triggers\WebhookTrigger;
 
-class WorkflowServiceProvider extends ServiceProvider
+class WorkflowConductorServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/workflows.php', 'workflows');
+        $this->mergeConfigFrom(__DIR__ . '/../config/workflow-conductor.php', 'workflow-conductor');
 
         $this->app->singleton(WorkflowManager::class, function ($app) {
             return new WorkflowManager($app);
         });
 
-        $this->app->alias(WorkflowManager::class, 'workflows');
+        $this->app->alias(WorkflowManager::class, 'workflow-conductor');
 
         $this->app->singleton(WorkflowExecutorInterface::class, WorkflowEngine::class);
     }
@@ -46,12 +46,12 @@ class WorkflowServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../config/workflows.php' => config_path('workflows.php'),
-        ], 'workflows-config');
+            __DIR__ . '/../config/workflow-conductor.php' => config_path('workflow-conductor.php'),
+        ], 'workflow-conductor-config');
 
         $this->publishes([
             __DIR__ . '/../database/migrations/' => database_path('migrations'),
-        ], 'workflows-migrations');
+        ], 'workflow-conductor-migrations');
 
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
@@ -65,7 +65,7 @@ class WorkflowServiceProvider extends ServiceProvider
     protected function registerBuiltInTriggers(): void
     {
         $manager = $this->app->make(WorkflowManager::class);
-        $config = config('workflows.triggers', []);
+        $config = config('workflow-conductor.triggers', []);
 
         if ($config['model_created'] ?? true) {
             $manager->registerTrigger(new ModelCreatedTrigger());
@@ -105,7 +105,7 @@ class WorkflowServiceProvider extends ServiceProvider
     protected function registerBuiltInActions(): void
     {
         $manager = $this->app->make(WorkflowManager::class);
-        $config = config('workflows.actions', []);
+        $config = config('workflow-conductor.actions', []);
 
         if ($config['send_email']['enabled'] ?? true) {
             $manager->registerAction(new SendEmailAction());

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class DelayAction extends AbstractAction
 {
@@ -46,7 +46,7 @@ class DelayAction extends AbstractAction
         };
 
         // Check max delay
-        $maxDelay = config('workflows.actions.delay.max_delay', 86400 * 30);
+        $maxDelay = config('workflow-conductor.actions.delay.max_delay', 86400 * 30);
         if ($seconds > $maxDelay) {
             return ActionResult::failure("Delay of {$seconds} seconds exceeds maximum allowed delay of {$maxDelay} seconds");
         }

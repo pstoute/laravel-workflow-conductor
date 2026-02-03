@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Engine;
+namespace Pstoute\WorkflowConductor\Engine;
 
 use Illuminate\Support\Facades\Log;
-use Pstoute\LaravelWorkflows\Contracts\WorkflowExecutorInterface;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\ExecutionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Events\ActionExecuted;
-use Pstoute\LaravelWorkflows\Events\ActionFailed;
-use Pstoute\LaravelWorkflows\Events\WorkflowCompleted;
-use Pstoute\LaravelWorkflows\Events\WorkflowFailed;
-use Pstoute\LaravelWorkflows\Events\WorkflowStarted;
-use Pstoute\LaravelWorkflows\Exceptions\WorkflowException;
-use Pstoute\LaravelWorkflows\Jobs\ExecuteWorkflow;
-use Pstoute\LaravelWorkflows\Jobs\ExecuteWorkflowAction;
-use Pstoute\LaravelWorkflows\Models\Workflow;
-use Pstoute\LaravelWorkflows\Models\WorkflowAction;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecution;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecutionLog;
+use Pstoute\WorkflowConductor\Contracts\WorkflowExecutorInterface;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\ExecutionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Events\ActionExecuted;
+use Pstoute\WorkflowConductor\Events\ActionFailed;
+use Pstoute\WorkflowConductor\Events\WorkflowCompleted;
+use Pstoute\WorkflowConductor\Events\WorkflowFailed;
+use Pstoute\WorkflowConductor\Events\WorkflowStarted;
+use Pstoute\WorkflowConductor\Exceptions\WorkflowException;
+use Pstoute\WorkflowConductor\Jobs\ExecuteWorkflow;
+use Pstoute\WorkflowConductor\Jobs\ExecuteWorkflowAction;
+use Pstoute\WorkflowConductor\Models\Workflow;
+use Pstoute\WorkflowConductor\Models\WorkflowAction;
+use Pstoute\WorkflowConductor\Models\WorkflowExecution;
+use Pstoute\WorkflowConductor\Models\WorkflowExecutionLog;
 
 class WorkflowEngine implements WorkflowExecutorInterface
 {
@@ -124,8 +124,8 @@ class WorkflowEngine implements WorkflowExecutorInterface
      */
     public function executeAsync(Workflow $workflow, WorkflowContext $context): void
     {
-        $queue = config('workflows.execution.queue', 'workflows');
-        $connection = config('workflows.execution.connection');
+        $queue = config('workflow-conductor.execution.queue', 'workflows');
+        $connection = config('workflow-conductor.execution.connection');
 
         $job = new ExecuteWorkflow($workflow->id, $context);
 
@@ -292,8 +292,8 @@ class WorkflowEngine implements WorkflowExecutorInterface
         WorkflowContext $context,
         WorkflowExecution $execution
     ): void {
-        $queue = config('workflows.execution.queue', 'workflows');
-        $connection = config('workflows.execution.connection');
+        $queue = config('workflow-conductor.execution.queue', 'workflows');
+        $connection = config('workflow-conductor.execution.connection');
 
         $job = new ExecuteWorkflowAction($action->id, $context, $execution->id);
 
@@ -309,8 +309,8 @@ class WorkflowEngine implements WorkflowExecutorInterface
      */
     protected function logError(Workflow $workflow, WorkflowExecution $execution, \Throwable $e): void
     {
-        if (config('workflows.logging.enabled', true)) {
-            Log::channel(config('workflows.logging.channel', 'stack'))->error(
+        if (config('workflow-conductor.logging.enabled', true)) {
+            Log::channel(config('workflow-conductor.logging.channel', 'stack'))->error(
                 "Workflow execution failed: {$e->getMessage()}",
                 [
                     'workflow_id' => $workflow->id,

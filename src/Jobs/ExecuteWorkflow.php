@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Jobs;
+namespace Pstoute\WorkflowConductor\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,9 +10,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Engine\WorkflowEngine;
-use Pstoute\LaravelWorkflows\Models\Workflow;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Engine\WorkflowEngine;
+use Pstoute\WorkflowConductor\Models\Workflow;
 
 class ExecuteWorkflow implements ShouldQueue
 {
@@ -40,9 +40,9 @@ class ExecuteWorkflow implements ShouldQueue
         public int $workflowId,
         public WorkflowContext $context,
     ) {
-        $this->tries = config('workflows.execution.max_retries', 3);
-        $this->backoff = config('workflows.execution.retry_delay', 60);
-        $this->timeout = config('workflows.execution.timeout', 300);
+        $this->tries = config('workflow-conductor.execution.max_retries', 3);
+        $this->backoff = config('workflow-conductor.execution.retry_delay', 60);
+        $this->timeout = config('workflow-conductor.execution.timeout', 300);
     }
 
     /**
@@ -53,7 +53,7 @@ class ExecuteWorkflow implements ShouldQueue
         $workflow = Workflow::find($this->workflowId);
 
         if (! $workflow) {
-            Log::channel(config('workflows.logging.channel', 'stack'))->warning(
+            Log::channel(config('workflow-conductor.logging.channel', 'stack'))->warning(
                 "Workflow not found: {$this->workflowId}"
             );
 
@@ -61,7 +61,7 @@ class ExecuteWorkflow implements ShouldQueue
         }
 
         if (! $workflow->isActive()) {
-            Log::channel(config('workflows.logging.channel', 'stack'))->info(
+            Log::channel(config('workflow-conductor.logging.channel', 'stack'))->info(
                 "Skipping inactive workflow: {$workflow->name}"
             );
 
@@ -76,7 +76,7 @@ class ExecuteWorkflow implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        Log::channel(config('workflows.logging.channel', 'stack'))->error(
+        Log::channel(config('workflow-conductor.logging.channel', 'stack'))->error(
             "Workflow job failed: {$exception->getMessage()}",
             [
                 'workflow_id' => $this->workflowId,

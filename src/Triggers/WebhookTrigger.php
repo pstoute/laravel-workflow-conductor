@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Triggers;
+namespace Pstoute\WorkflowConductor\Triggers;
 
 use Illuminate\Support\Str;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class WebhookTrigger extends AbstractTrigger
 {
@@ -78,7 +78,7 @@ class WebhookTrigger extends AbstractTrigger
      */
     public static function getWebhookUrl(string $webhookId): string
     {
-        $prefix = config('workflows.webhooks.route_prefix', 'workflows/webhooks');
+        $prefix = config('workflow-conductor.webhooks.route_prefix', 'workflows/webhooks');
 
         return url("{$prefix}/{$webhookId}");
     }

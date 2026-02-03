@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
 use Illuminate\Support\Facades\Mail;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class SendEmailAction extends AbstractAction
 {
@@ -37,8 +37,8 @@ class SendEmailAction extends AbstractAction
         $data = $config['data'] ?? [];
         $cc = $config['cc'] ?? null;
         $bcc = $config['bcc'] ?? null;
-        $from = $config['from'] ?? config('workflows.actions.send_email.from') ?? config('mail.from.address');
-        $fromName = $config['from_name'] ?? config('workflows.actions.send_email.from_name') ?? config('mail.from.name');
+        $from = $config['from'] ?? config('workflow-conductor.actions.send_email.from') ?? config('mail.from.address');
+        $fromName = $config['from_name'] ?? config('workflow-conductor.actions.send_email.from_name') ?? config('mail.from.name');
 
         if (empty($to)) {
             return ActionResult::failure('No recipient specified');

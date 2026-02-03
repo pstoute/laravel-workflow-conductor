@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Pstoute\LaravelWorkflows\Http\Controllers\WebhookTriggerController;
-use Pstoute\LaravelWorkflows\Http\Middleware\ValidateWebhookSignature;
+use Pstoute\WorkflowConductor\Http\Controllers\WebhookTriggerController;
+use Pstoute\WorkflowConductor\Http\Middleware\ValidateWebhookSignature;
 
-$prefix = config('workflows.webhooks.route_prefix', 'workflows/webhooks');
-$middleware = config('workflows.webhooks.middleware', ['api']);
+$prefix = config('workflow-conductor.webhooks.route_prefix', 'workflows/webhooks');
+$middleware = config('workflow-conductor.webhooks.middleware', ['api']);
 
 Route::prefix($prefix)
     ->middleware(array_merge($middleware, [ValidateWebhookSignature::class]))

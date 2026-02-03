@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Support;
+namespace Pstoute\WorkflowConductor\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class VariableInterpolator
 {

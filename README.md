@@ -1,6 +1,6 @@
-# Laravel Workflows
+# Laravel Workflow Conductor
 
-A powerful, Laravel-native workflow automation engine that enables developers to create complex automation rules with triggers, conditions, and actions. Think Zapier/Make/n8n but self-hosted and deeply integrated with Laravel.
+A powerful, Laravel-native workflow conductor that lets users build automation with triggers, conditions, and actions. Think Zapier/Make/n8n but self-hosted and deeply integrated with Laravel.
 
 ## Features
 
@@ -21,13 +21,13 @@ A powerful, Laravel-native workflow automation engine that enables developers to
 ## Installation
 
 ```bash
-composer require pstoute/laravel-workflows
+composer require pstoute/laravel-workflow-conductor
 ```
 
 Publish the configuration file:
 
 ```bash
-php artisan vendor:publish --tag=workflows-config
+php artisan vendor:publish --tag=workflow-conductor-config
 ```
 
 Run the migrations:
@@ -41,10 +41,10 @@ php artisan migrate
 ### Creating a Workflow Programmatically
 
 ```php
-use Pstoute\LaravelWorkflows\Facades\Workflows;
+use Pstoute\WorkflowConductor\Facades\Conductor;
 
 // Create a welcome email workflow
-$workflow = Workflows::create()
+$workflow = Conductor::create()
     ->name('Welcome Email')
     ->trigger('model.created', ['model' => App\Models\User::class])
     ->when('email_verified_at', 'is_not_null')
@@ -61,7 +61,7 @@ $workflow = Workflows::create()
 Add the trait to your models to automatically trigger workflows on model events:
 
 ```php
-use Pstoute\LaravelWorkflows\Traits\HasWorkflows;
+use Pstoute\WorkflowConductor\Traits\HasWorkflows;
 
 class User extends Model
 {
@@ -72,8 +72,8 @@ class User extends Model
 ### Manual Workflow Execution
 
 ```php
-use Pstoute\LaravelWorkflows\Facades\Workflows;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Facades\Conductor;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 $context = new WorkflowContext([
     'order' => $order,
@@ -81,15 +81,15 @@ $context = new WorkflowContext([
 ]);
 
 // Execute synchronously
-$result = Workflows::execute($workflowId, $context);
+$result = Conductor::execute($workflowId, $context);
 
 // Execute asynchronously
-Workflows::executeAsync($workflowId, $context);
+Conductor::executeAsync($workflowId, $context);
 ```
 
 ## Configuration
 
-The configuration file is located at `config/workflows.php`. Key options include:
+The configuration file is located at `config/workflow-conductor.php`. Key options include:
 
 ```php
 return [
@@ -117,7 +117,7 @@ return [
 ### Model Events
 
 ```php
-Workflows::create()
+Conductor::create()
     ->trigger('model.created', ['model' => App\Models\User::class])
     // ...
 ```
@@ -130,7 +130,7 @@ Available model triggers:
 ### Scheduled (Cron)
 
 ```php
-Workflows::create()
+Conductor::create()
     ->trigger('scheduled', [
         'cron' => '0 9 * * *', // Every day at 9 AM
         'timezone' => 'America/New_York',
@@ -141,7 +141,7 @@ Workflows::create()
 ### Webhook
 
 ```php
-$workflow = Workflows::create()
+$workflow = Conductor::create()
     ->trigger('webhook', [
         'webhook_id' => 'your-unique-webhook-id',
     ])
@@ -154,7 +154,7 @@ $workflow = Workflows::create()
 ### Manual
 
 ```php
-Workflows::create()
+Conductor::create()
     ->trigger('manual', [
         'allowed_users' => [1, 2, 3], // Optional: restrict to specific users
         'required_data' => ['order_id'], // Optional: require specific context data
@@ -167,7 +167,7 @@ Workflows::create()
 ### Field Conditions
 
 ```php
-Workflows::create()
+Conductor::create()
     ->when('status', 'equals', 'active')
     ->when('total', 'greater_than', 100)
     ->orWhen('type', 'equals', 'premium')
@@ -188,7 +188,7 @@ Available operators:
 ### Date Conditions
 
 ```php
-Workflows::create()
+Conductor::create()
     ->condition('date', [
         'field' => 'created_at',
         'operator' => 'is_today',
@@ -199,7 +199,7 @@ Workflows::create()
 ### Relation Conditions
 
 ```php
-Workflows::create()
+Conductor::create()
     ->condition('relation', [
         'relation' => 'orders',
         'operator' => 'count_greater',
@@ -213,7 +213,7 @@ Workflows::create()
 ### Send Email
 
 ```php
-Workflows::create()
+Conductor::create()
     ->sendEmail(
         '{{ model.email }}',
         'Order Confirmation #{{ model.order_number }}',
@@ -231,7 +231,7 @@ Workflows::create()
 ### Send Notification
 
 ```php
-Workflows::create()
+Conductor::create()
     ->action('send_notification', [
         'notification' => App\Notifications\OrderShipped::class,
         'notifiable' => 'model.user',
@@ -241,7 +241,7 @@ Workflows::create()
 ### Webhook
 
 ```php
-Workflows::create()
+Conductor::create()
     ->webhook('https://api.example.com/webhook', [
         'event' => 'order.created',
         'order_id' => '{{ model.id }}',
@@ -251,7 +251,7 @@ Workflows::create()
 ### Slack Message
 
 ```php
-Workflows::create()
+Conductor::create()
     ->slack(
         ':money_bag: New order #{{ model.number }} for ${{ model.total | number_format:2 }}',
         '#sales'
@@ -261,7 +261,7 @@ Workflows::create()
 ### Create/Update/Delete Model
 
 ```php
-Workflows::create()
+Conductor::create()
     ->createModel(App\Models\Task::class, [
         'user_id' => '{{ model.id }}',
         'title' => 'Follow up with {{ model.name }}',
@@ -272,7 +272,7 @@ Workflows::create()
 ### Delay
 
 ```php
-Workflows::create()
+Conductor::create()
     ->delay(3, 'days')
     ->sendEmail(/* ... */)
 ```
@@ -280,7 +280,7 @@ Workflows::create()
 ### HTTP Request
 
 ```php
-Workflows::create()
+Conductor::create()
     ->action('http_request', [
         'url' => 'https://api.example.com/users',
         'method' => 'POST',
@@ -327,7 +327,7 @@ The package dispatches events during workflow execution:
 - `ActionFailed` - When an action fails
 
 ```php
-use Pstoute\LaravelWorkflows\Events\WorkflowCompleted;
+use Pstoute\WorkflowConductor\Events\WorkflowCompleted;
 
 Event::listen(WorkflowCompleted::class, function ($event) {
     Log::info("Workflow {$event->workflow->name} completed");
@@ -345,8 +345,8 @@ To create a custom trigger, implement `TriggerInterface`:
 
 namespace App\Workflows\Triggers;
 
-use Pstoute\LaravelWorkflows\Contracts\TriggerInterface;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Contracts\TriggerInterface;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class PaymentReceivedTrigger implements TriggerInterface
 {
@@ -420,20 +420,20 @@ class PaymentReceivedTrigger implements TriggerInterface
 Register your trigger in a service provider:
 
 ```php
-use Pstoute\LaravelWorkflows\Facades\Workflows;
+use Pstoute\WorkflowConductor\Facades\Conductor;
 use App\Workflows\Triggers\PaymentReceivedTrigger;
 
 public function boot(): void
 {
-    Workflows::registerTrigger(new PaymentReceivedTrigger());
+    Conductor::registerTrigger(new PaymentReceivedTrigger());
 }
 ```
 
 Then trigger it from your code:
 
 ```php
-use Pstoute\LaravelWorkflows\Facades\Workflows;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Facades\Conductor;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 // In your payment processing code
 $context = new WorkflowContext([
@@ -441,7 +441,7 @@ $context = new WorkflowContext([
     'user' => $payment->user,
 ]);
 
-Workflows::trigger('payment.received', $context);
+Conductor::trigger('payment.received', $context);
 ```
 
 ### Creating a Custom Action
@@ -453,9 +453,9 @@ To create a custom action, implement `ActionInterface`:
 
 namespace App\Workflows\Actions;
 
-use Pstoute\LaravelWorkflows\Contracts\ActionInterface;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Contracts\ActionInterface;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 use App\Services\SmsService;
 
 class SendSmsAction implements ActionInterface
@@ -542,19 +542,19 @@ class SendSmsAction implements ActionInterface
 Register your action in a service provider:
 
 ```php
-use Pstoute\LaravelWorkflows\Facades\Workflows;
+use Pstoute\WorkflowConductor\Facades\Conductor;
 use App\Workflows\Actions\SendSmsAction;
 
 public function boot(): void
 {
-    Workflows::registerAction(app(SendSmsAction::class));
+    Conductor::registerAction(app(SendSmsAction::class));
 }
 ```
 
 Now you can use it in workflows:
 
 ```php
-Workflows::create()
+Conductor::create()
     ->name('Order SMS Notification')
     ->trigger('model.created', ['model' => App\Models\Order::class])
     ->action('send_sms', [
@@ -573,8 +573,8 @@ To create a custom condition, implement `ConditionInterface`:
 
 namespace App\Workflows\Conditions;
 
-use Pstoute\LaravelWorkflows\Contracts\ConditionInterface;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Contracts\ConditionInterface;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class BusinessHoursCondition implements ConditionInterface
 {
@@ -652,9 +652,9 @@ class BusinessHoursCondition implements ConditionInterface
 Register and use:
 
 ```php
-Workflows::registerCondition(new BusinessHoursCondition());
+Conductor::registerCondition(new BusinessHoursCondition());
 
-Workflows::create()
+Conductor::create()
     ->name('Business Hours Only')
     ->trigger('model.created', ['model' => App\Models\Lead::class])
     ->condition('business_hours', [
@@ -670,8 +670,8 @@ Workflows::create()
 For quick custom logic without creating full classes, use the `custom` action/condition:
 
 ```php
-use Pstoute\LaravelWorkflows\Actions\CustomAction;
-use Pstoute\LaravelWorkflows\Conditions\CustomCondition;
+use Pstoute\WorkflowConductor\Actions\CustomAction;
+use Pstoute\WorkflowConductor\Conditions\CustomCondition;
 
 // Register a custom action handler
 CustomAction::register('sync_to_crm', function (WorkflowContext $context, array $params) {
@@ -687,7 +687,7 @@ CustomCondition::register('is_premium_user', function (WorkflowContext $context,
 });
 
 // Use in workflow
-Workflows::create()
+Conductor::create()
     ->name('Premium User Sync')
     ->trigger('model.updated', ['model' => App\Models\User::class])
     ->condition('custom', ['callback' => 'is_premium_user'])
@@ -700,7 +700,7 @@ Workflows::create()
 To process scheduled workflows, add this to your `app/Console/Kernel.php`:
 
 ```php
-use Pstoute\LaravelWorkflows\Jobs\ProcessScheduledWorkflows;
+use Pstoute\WorkflowConductor\Jobs\ProcessScheduledWorkflows;
 
 protected function schedule(Schedule $schedule): void
 {

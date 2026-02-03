@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(config('workflows.database.table_prefix', 'workflow_') . 'workflows', function (Blueprint $table) {
+        Schema::create(config('workflow-conductor.database.table_prefix', 'workflow_') . 'workflows', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists(config('workflows.database.table_prefix', 'workflow_') . 'workflows');
+        Schema::dropIfExists(config('workflow-conductor.database.table_prefix', 'workflow_') . 'workflows');
     }
 };

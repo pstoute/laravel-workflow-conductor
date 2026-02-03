@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows;
+namespace Pstoute\WorkflowConductor;
 
-use Pstoute\LaravelWorkflows\Models\Workflow;
-use Pstoute\LaravelWorkflows\Models\WorkflowAction;
-use Pstoute\LaravelWorkflows\Models\WorkflowCondition;
-use Pstoute\LaravelWorkflows\Models\WorkflowTrigger;
+use Pstoute\WorkflowConductor\Models\Workflow;
+use Pstoute\WorkflowConductor\Models\WorkflowAction;
+use Pstoute\WorkflowConductor\Models\WorkflowCondition;
+use Pstoute\WorkflowConductor\Models\WorkflowTrigger;
 
 class WorkflowBuilder
 {

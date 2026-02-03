@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Actions;
+namespace Pstoute\WorkflowConductor\Actions;
 
 use Illuminate\Database\Eloquent\Model;
-use Pstoute\LaravelWorkflows\Data\ActionResult;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Data\ActionResult;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
 
 class UpdateModelAction extends AbstractAction
 {
@@ -47,7 +47,7 @@ class UpdateModelAction extends AbstractAction
                 }
 
                 // Check allowed models
-                $allowedModels = config('workflows.actions.update_model.allowed_models', ['*']);
+                $allowedModels = config('workflow-conductor.actions.update_model.allowed_models', ['*']);
                 if (! $this->isModelAllowed($modelClass, $allowedModels)) {
                     return ActionResult::failure("Model '{$modelClass}' is not in the allowed list");
                 }
@@ -65,7 +65,7 @@ class UpdateModelAction extends AbstractAction
                 }
 
                 // Check allowed models
-                $allowedModels = config('workflows.actions.update_model.allowed_models', ['*']);
+                $allowedModels = config('workflow-conductor.actions.update_model.allowed_models', ['*']);
                 if (! $this->isModelAllowed(get_class($model), $allowedModels)) {
                     return ActionResult::failure('Model is not in the allowed list');
                 }

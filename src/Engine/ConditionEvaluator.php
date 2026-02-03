@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Engine;
+namespace Pstoute\WorkflowConductor\Engine;
 
 use Illuminate\Support\Collection;
-use Pstoute\LaravelWorkflows\Contracts\ConditionInterface;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Exceptions\ConditionException;
-use Pstoute\LaravelWorkflows\Models\WorkflowCondition;
+use Pstoute\WorkflowConductor\Contracts\ConditionInterface;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Exceptions\ConditionException;
+use Pstoute\WorkflowConductor\Models\WorkflowCondition;
 
 class ConditionEvaluator
 {

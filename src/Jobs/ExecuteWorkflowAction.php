@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pstoute\LaravelWorkflows\Jobs;
+namespace Pstoute\WorkflowConductor\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,13 +10,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Pstoute\LaravelWorkflows\Data\WorkflowContext;
-use Pstoute\LaravelWorkflows\Engine\ActionExecutor;
-use Pstoute\LaravelWorkflows\Events\ActionExecuted;
-use Pstoute\LaravelWorkflows\Events\ActionFailed;
-use Pstoute\LaravelWorkflows\Models\WorkflowAction;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecution;
-use Pstoute\LaravelWorkflows\Models\WorkflowExecutionLog;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+use Pstoute\WorkflowConductor\Engine\ActionExecutor;
+use Pstoute\WorkflowConductor\Events\ActionExecuted;
+use Pstoute\WorkflowConductor\Events\ActionFailed;
+use Pstoute\WorkflowConductor\Models\WorkflowAction;
+use Pstoute\WorkflowConductor\Models\WorkflowExecution;
+use Pstoute\WorkflowConductor\Models\WorkflowExecutionLog;
 
 class ExecuteWorkflowAction implements ShouldQueue
 {
@@ -42,9 +42,9 @@ class ExecuteWorkflowAction implements ShouldQueue
         public WorkflowContext $context,
         public int $executionId,
     ) {
-        $this->tries = config('workflows.execution.max_retries', 3);
-        $this->backoff = config('workflows.execution.retry_delay', 60);
-        $this->timeout = config('workflows.execution.timeout', 300);
+        $this->tries = config('workflow-conductor.execution.max_retries', 3);
+        $this->backoff = config('workflow-conductor.execution.retry_delay', 60);
+        $this->timeout = config('workflow-conductor.execution.timeout', 300);
     }
 
     /**
@@ -56,7 +56,7 @@ class ExecuteWorkflowAction implements ShouldQueue
         $execution = WorkflowExecution::find($this->executionId);
 
         if (! $action) {
-            Log::channel(config('workflows.logging.channel', 'stack'))->warning(
+            Log::channel(config('workflow-conductor.logging.channel', 'stack'))->warning(
                 "Action not found: {$this->actionId}"
             );
 
@@ -64,7 +64,7 @@ class ExecuteWorkflowAction implements ShouldQueue
         }
 
         if (! $execution) {
-            Log::channel(config('workflows.logging.channel', 'stack'))->warning(
+            Log::channel(config('workflow-conductor.logging.channel', 'stack'))->warning(
                 "Execution not found: {$this->executionId}"
             );
 
@@ -114,7 +114,7 @@ class ExecuteWorkflowAction implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        Log::channel(config('workflows.logging.channel', 'stack'))->error(
+        Log::channel(config('workflow-conductor.logging.channel', 'stack'))->error(
             "Workflow action job failed: {$exception->getMessage()}",
             [
                 'action_id' => $this->actionId,
