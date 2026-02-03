@@ -1,0 +1,11 @@
+/vendor/
+/node_modules/
+/.phpunit.cache/
+/coverage/
+.env
+.env.backup
+.phpunit.result.cache
+composer.lock
+*.log
+.DS_Store
+Thumbs.db
