@@ -15,6 +15,16 @@ use Pstoute\WorkflowConductor\Actions\SendNotificationAction;
 use Pstoute\WorkflowConductor\Actions\SlackMessageAction;
 use Pstoute\WorkflowConductor\Actions\UpdateModelAction;
 use Pstoute\WorkflowConductor\Actions\WebhookAction;
+use Pstoute\WorkflowConductor\Actions\ArrayAction;
+use Pstoute\WorkflowConductor\Actions\DateFormatterAction;
+use Pstoute\WorkflowConductor\Actions\GoalEventAction;
+use Pstoute\WorkflowConductor\Actions\GoToAction;
+use Pstoute\WorkflowConductor\Actions\IfElseAction;
+use Pstoute\WorkflowConductor\Actions\MathAction;
+use Pstoute\WorkflowConductor\Actions\NumberFormatterAction;
+use Pstoute\WorkflowConductor\Actions\SetVariableAction;
+use Pstoute\WorkflowConductor\Actions\SplitAction;
+use Pstoute\WorkflowConductor\Actions\TextFormatterAction;
 use Pstoute\WorkflowConductor\Conditions\CustomCondition;
 use Pstoute\WorkflowConductor\Conditions\DateCondition;
 use Pstoute\WorkflowConductor\Conditions\FieldCondition;
@@ -53,7 +63,9 @@ class WorkflowConductorServiceProvider extends ServiceProvider
             __DIR__ . '/../database/migrations/' => database_path('migrations'),
         ], 'workflow-conductor-migrations');
 
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        if (!config('workflow-conductor.database.skip_migrations', false)) {
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        }
 
         $this->loadRoutesFrom(__DIR__ . '/../routes/webhooks.php');
 
@@ -144,5 +156,47 @@ class WorkflowConductorServiceProvider extends ServiceProvider
         }
 
         $manager->registerAction(new CustomAction());
+
+        // Utility actions
+        if ($config['math']['enabled'] ?? true) {
+            $manager->registerAction(new MathAction());
+        }
+
+        if ($config['date_formatter']['enabled'] ?? true) {
+            $manager->registerAction(new DateFormatterAction());
+        }
+
+        if ($config['number_formatter']['enabled'] ?? true) {
+            $manager->registerAction(new NumberFormatterAction());
+        }
+
+        if ($config['text_formatter']['enabled'] ?? true) {
+            $manager->registerAction(new TextFormatterAction());
+        }
+
+        if ($config['array']['enabled'] ?? true) {
+            $manager->registerAction(new ArrayAction());
+        }
+
+        if ($config['set_variable']['enabled'] ?? true) {
+            $manager->registerAction(new SetVariableAction());
+        }
+
+        // Control flow actions
+        if ($config['if_else']['enabled'] ?? true) {
+            $manager->registerAction(new IfElseAction());
+        }
+
+        if ($config['split']['enabled'] ?? true) {
+            $manager->registerAction(new SplitAction());
+        }
+
+        if ($config['goto']['enabled'] ?? true) {
+            $manager->registerAction(new GoToAction());
+        }
+
+        if ($config['goal']['enabled'] ?? true) {
+            $manager->registerAction(new GoalEventAction());
+        }
     }
 }

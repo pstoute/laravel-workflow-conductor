@@ -124,6 +124,48 @@ return [
             'enabled' => true,
             'max_delay' => 86400 * 30, // 30 days max in seconds
         ],
+
+        // Utility actions
+        'math' => [
+            'enabled' => true,
+        ],
+
+        'date_formatter' => [
+            'enabled' => true,
+        ],
+
+        'number_formatter' => [
+            'enabled' => true,
+        ],
+
+        'text_formatter' => [
+            'enabled' => true,
+        ],
+
+        'array' => [
+            'enabled' => true,
+        ],
+
+        'set_variable' => [
+            'enabled' => true,
+        ],
+
+        // Control flow actions
+        'if_else' => [
+            'enabled' => true,
+        ],
+
+        'split' => [
+            'enabled' => true,
+        ],
+
+        'goto' => [
+            'enabled' => true,
+        ],
+
+        'goal' => [
+            'enabled' => true,
+        ],
     ],
 
     /*
@@ -153,5 +195,6 @@ return [
     'database' => [
         'connection' => env('WORKFLOW_DB_CONNECTION', null), // null = default
         'table_prefix' => 'workflow_',
+        'skip_migrations' => false, // Set true if your app has its own migration files
     ],
 ];

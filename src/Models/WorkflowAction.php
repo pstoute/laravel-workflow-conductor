@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array<string, mixed> $configuration
  * @property int $order
  * @property int $delay
+ * @property string|null $node_id
  * @property bool $continue_on_failure
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at

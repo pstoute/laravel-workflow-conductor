@@ -36,6 +36,70 @@ Run the migrations:
 php artisan migrate
 ```
 
+## Using with an Existing Schema
+
+If your application already has workflow/automation tables, you can skip the package migrations and map your models:
+
+```php
+// config/workflow-conductor.php
+
+'database' => [
+    'table_prefix' => 'automation_',   // Match your existing table prefix
+    'skip_migrations' => true,          // Skip package migrations
+],
+
+// Override the default models with your extended versions
+'models' => [
+    'workflow' => App\Models\Automation::class,
+    'trigger' => App\Models\AutomationTrigger::class,
+    'condition' => App\Models\AutomationCondition::class,
+    'action' => App\Models\AutomationAction::class,
+    'execution' => App\Models\AutomationExecution::class,
+    'execution_log' => App\Models\AutomationActionResult::class,
+],
+```
+
+Your models should extend the package models and override `getTable()`:
+
+```php
+use Pstoute\WorkflowConductor\Models\Workflow;
+
+class Automation extends Workflow
+{
+    public function getTable(): string
+    {
+        return 'automations';
+    }
+
+    // Add your custom columns, relationships, etc.
+}
+```
+
+If you are using `dont-discover` to prevent auto-registration, create a wrapper provider:
+
+```php
+use Pstoute\WorkflowConductor\WorkflowConductorServiceProvider;
+
+class WorkflowConductorProvider extends WorkflowConductorServiceProvider
+{
+    public function boot(): void
+    {
+        // Publish config
+        $this->publishes([
+            base_path('vendor/pstoute/laravel-workflow-conductor/config/workflow-conductor.php')
+                => config_path('workflow-conductor.php'),
+        ], 'workflow-conductor-config');
+
+        // Skip migrations - the app has its own tables
+        // Load routes and register built-in extensions
+        $this->loadRoutesFrom(base_path('vendor/pstoute/laravel-workflow-conductor/routes/webhooks.php'));
+        $this->registerBuiltInTriggers();
+        $this->registerBuiltInConditions();
+        $this->registerBuiltInActions();
+    }
+}
+```
+
 ## Quick Start
 
 ### Creating a Workflow Programmatically
@@ -694,6 +758,165 @@ Conductor::create()
     ->action('custom', ['handler' => 'sync_to_crm'])
     ->save();
 ```
+
+## Building an Extension Provider
+
+For applications with multiple custom triggers and actions, organize them in a dedicated service provider:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Pstoute\WorkflowConductor\WorkflowManager;
+
+class AutomationExtensionProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        $manager = $this->app->make(WorkflowManager::class);
+
+        // Register custom triggers
+        $manager->registerTrigger(new \App\Automation\Triggers\PaymentReceivedTrigger());
+        $manager->registerTrigger(new \App\Automation\Triggers\FormSubmittedTrigger());
+
+        // Register custom actions with dependency injection
+        $manager->registerAction($this->app->make(\App\Automation\Actions\SendSmsAction::class));
+        $manager->registerAction($this->app->make(\App\Automation\Actions\SyncToCrmAction::class));
+        $manager->registerAction($this->app->make(\App\Automation\Actions\GeneratePdfAction::class));
+    }
+}
+```
+
+Disable built-in actions that your app replaces to avoid duplicates:
+
+```php
+// config/workflow-conductor.php
+'actions' => [
+    'send_email' => ['enabled' => false],     // App provides enhanced version
+    'webhook' => ['enabled' => false],          // App provides its own
+    'create_model' => ['enabled' => true],      // Keep generic utilities
+    'update_model' => ['enabled' => true],
+    'delete_model' => ['enabled' => true],
+],
+```
+
+## Action Output and Chaining
+
+Each action's output is merged into the `WorkflowContext` under the `previous_actions` key, making it available to subsequent actions:
+
+```php
+// First action: generate a PDF
+class GeneratePdfAction extends AbstractAction
+{
+    public function execute(WorkflowContext $context, array $config): ActionResult
+    {
+        $pdf = $this->pdfService->generate($config['template'], $context->all());
+
+        return ActionResult::success('PDF generated', [
+            'file_path' => $pdf->path,
+            'filename' => $pdf->name,
+            'download_url' => $pdf->url,
+        ]);
+    }
+}
+
+// Second action: send email with the PDF from the previous action
+// In the action config, reference previous output:
+[
+    'to' => '{{ model.email }}',
+    'subject' => 'Your document is ready',
+    'body' => 'Download: {{ previous_actions.generate_pdf.download_url }}',
+    'attachment' => '{{ previous_actions.generate_pdf.file_path }}',
+]
+```
+
+## Querying the Registry
+
+Use the `WorkflowManager` to list all registered extensions programmatically. This is useful for building UI dashboards where users configure workflows:
+
+```php
+use Pstoute\WorkflowConductor\WorkflowManager;
+
+$manager = app(WorkflowManager::class);
+
+// Get all registered actions with their schemas (for dropdown/form generation)
+$actions = collect($manager->getActions())->map(fn ($action) => [
+    'value' => $action->getIdentifier(),
+    'label' => $action->getName(),
+    'description' => $action->getDescription(),
+    'schema' => $action->getConfigurationSchema(),
+    'output' => $action->getOutputData(),
+]);
+
+// Get all registered triggers
+$triggers = collect($manager->getTriggers())->map(fn ($trigger) => [
+    'value' => $trigger->getIdentifier(),
+    'label' => $trigger->getName(),
+    'schema' => $trigger->getConfigurationSchema(),
+    'available_data' => $trigger->getAvailableData(),
+]);
+```
+
+## Using the VariableInterpolator
+
+The `VariableInterpolator` resolves `{{ path }}` placeholders against a `WorkflowContext`. Use it to process action configs before execution:
+
+```php
+use Pstoute\WorkflowConductor\Support\VariableInterpolator;
+use Pstoute\WorkflowConductor\Data\WorkflowContext;
+
+$interpolator = new VariableInterpolator();
+$context = new WorkflowContext(['user' => $user, 'order' => $order]);
+
+// Interpolate strings
+$greeting = $interpolator->interpolate('Hello {{ user.name }}!', $context);
+
+// Interpolate arrays recursively
+$config = $interpolator->interpolate([
+    'to' => '{{ user.email }}',
+    'subject' => 'Order #{{ order.number }}',
+    'amount' => '{{ order.total | money:$:2 }}',
+], $context);
+```
+
+### All Available Filters
+
+| Filter | Description | Example |
+|--------|-------------|---------|
+| `uppercase` / `upper` | Uppercase | `{{ name \| uppercase }}` |
+| `lowercase` / `lower` | Lowercase | `{{ name \| lowercase }}` |
+| `ucfirst` / `capitalize` | Capitalize first letter | `{{ name \| ucfirst }}` |
+| `ucwords` / `title` | Title case | `{{ name \| title }}` |
+| `trim` | Trim whitespace | `{{ input \| trim }}` |
+| `slug` | URL slug | `{{ title \| slug }}` |
+| `snake` | snake_case | `{{ name \| snake }}` |
+| `camel` | camelCase | `{{ name \| camel }}` |
+| `studly` / `pascal` | StudlyCase | `{{ name \| studly }}` |
+| `number_format:decimals` | Format number | `{{ price \| number_format:2 }}` |
+| `date:format` | Format date | `{{ created_at \| date:M d, Y }}` |
+| `default:value` | Fallback if null | `{{ name \| default:Guest }}` |
+| `json` | JSON encode | `{{ data \| json }}` |
+| `count` | Count items | `{{ items \| count }}` |
+| `first` | First element | `{{ items \| first }}` |
+| `last` | Last element | `{{ items \| last }}` |
+| `join:sep` / `implode` | Join array | `{{ tags \| join:, }}` |
+| `split:sep` / `explode` | Split string | `{{ csv \| split:, }}` |
+| `length` / `strlen` | String/array length | `{{ name \| length }}` |
+| `substr:start:len` | Substring | `{{ text \| substr:0:100 }}` |
+| `replace:old:new` | Replace string | `{{ text \| replace:foo:bar }}` |
+| `money:symbol:decimals` | Currency format | `{{ price \| money:$:2 }}` |
+| `bool` / `int` / `float` / `string` | Type casting | `{{ value \| int }}` |
+| `abs` / `round:n` / `floor` / `ceil` | Math operations | `{{ value \| round:2 }}` |
+
+### Special Variable Prefixes
+
+| Prefix | Description | Example |
+|--------|-------------|---------|
+| `config.` | Laravel config values | `{{ config.app.name }}` |
+| `env.` | Environment variables | `{{ env.API_TOKEN }}` |
+| `now` | Current timestamp | `{{ now \| date:Y-m-d }}` |
 
 ## Scheduled Workflows
 

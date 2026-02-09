@@ -86,6 +86,14 @@ class ActionResult implements Arrayable
     }
 
     /**
+     * Get a specific metadata value.
+     */
+    public function getMetadata(string $key, mixed $default = null): mixed
+    {
+        return $this->metadata[$key] ?? $default;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray(): array

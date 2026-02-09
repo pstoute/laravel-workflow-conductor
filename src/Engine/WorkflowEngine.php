@@ -198,7 +198,11 @@ class WorkflowEngine implements WorkflowExecutorInterface
     }
 
     /**
-     * Execute workflow actions.
+     * Execute workflow actions with routing-aware control flow.
+     *
+     * Supports linear execution, branching (If/Else, GoTo), parallel splits,
+     * and event-based waits (Goal). Actions can route to specific nodes via
+     * metadata keys: next_node_id, branch_node_ids, wait_for_event.
      *
      * @return array<int, ActionResult>
      */
@@ -208,28 +212,127 @@ class WorkflowEngine implements WorkflowExecutorInterface
         WorkflowExecution $execution
     ): array {
         $results = [];
+        $actions = $workflow->actions;
 
-        foreach ($workflow->actions as $action) {
+        // Build a node_id lookup for routing (only actions that have a node_id)
+        $nodeIndex = $actions->filter(fn ($a) => !empty($a->node_id))->keyBy('node_id');
+
+        // Start with the first action by order
+        $currentAction = $actions->sortBy('order')->first();
+
+        while ($currentAction) {
             // Handle delayed actions
-            if ($action->hasDelay()) {
-                $this->scheduleDelayedAction($action, $context, $execution);
+            if ($currentAction->hasDelay()) {
+                $this->scheduleDelayedAction($currentAction, $context, $execution);
                 $results[] = ActionResult::success('Action scheduled for delayed execution', [
                     'delayed' => true,
-                    'delay_seconds' => $action->delay,
+                    'delay_seconds' => $currentAction->delay,
                 ]);
+
+                // Move to next sequential action after delay
+                $currentAction = $this->getNextSequentialAction($actions, $currentAction);
                 continue;
             }
 
-            $result = $this->executeAction($action, $context, $execution);
+            $result = $this->executeAction($currentAction, $context, $execution);
             $results[] = $result;
 
             // Stop if action failed and not configured to continue
-            if ($result->isFailure() && ! $action->shouldContinueOnFailure()) {
+            if ($result->isFailure() && ! $currentAction->shouldContinueOnFailure()) {
                 break;
             }
+
+            // Check for routing metadata from control flow actions
+            $nextNodeId = $result->getMetadata('next_node_id');
+            if ($nextNodeId) {
+                $currentAction = $nodeIndex->get($nextNodeId);
+                continue;
+            }
+
+            // Check for parallel branches (Split action)
+            $branchNodeIds = $result->getMetadata('branch_node_ids');
+            if ($branchNodeIds) {
+                foreach ($branchNodeIds as $branchNodeId) {
+                    $this->dispatchBranch($workflow, $branchNodeId, $context, $execution);
+                }
+                $currentAction = null; // Parent path ends after split
+                continue;
+            }
+
+            // Check for event wait (Goal action)
+            $waitForEvent = $result->getMetadata('wait_for_event');
+            if ($waitForEvent) {
+                $this->persistWaitState($execution, $currentAction, $context, $waitForEvent);
+                $currentAction = null; // Execution pauses until event
+                continue;
+            }
+
+            // Default: move to next sequential action
+            $currentAction = $this->getNextSequentialAction($actions, $currentAction);
         }
 
         return $results;
+    }
+
+    /**
+     * Get the next action in sequential order.
+     */
+    protected function getNextSequentialAction(
+        \Illuminate\Database\Eloquent\Collection $actions,
+        WorkflowAction $currentAction
+    ): ?WorkflowAction {
+        return $actions
+            ->where('order', '>', $currentAction->order)
+            ->sortBy('order')
+            ->first();
+    }
+
+    /**
+     * Dispatch a parallel branch for execution.
+     */
+    protected function dispatchBranch(
+        Workflow $workflow,
+        string $branchNodeId,
+        WorkflowContext $context,
+        WorkflowExecution $execution
+    ): void {
+        $queue = config('workflow-conductor.execution.queue', 'workflows');
+        $connection = config('workflow-conductor.execution.connection');
+
+        // Find the action by node_id
+        $branchAction = $workflow->actions->firstWhere('node_id', $branchNodeId);
+
+        if ($branchAction) {
+            $job = new ExecuteWorkflowAction($branchAction->id, $context, $execution->id);
+
+            if ($connection) {
+                $job->onConnection($connection);
+            }
+
+            dispatch($job->onQueue($queue));
+        }
+    }
+
+    /**
+     * Persist the workflow wait state for a Goal/Event action.
+     *
+     * @param array<string, mixed> $waitConfig
+     */
+    protected function persistWaitState(
+        WorkflowExecution $execution,
+        WorkflowAction $action,
+        WorkflowContext $context,
+        array $waitConfig
+    ): void {
+        $execution->update([
+            'status' => 'waiting',
+            'metadata' => array_merge($execution->metadata ?? [], [
+                'waiting_for' => $waitConfig,
+                'waiting_action_id' => $action->id,
+                'waiting_since' => now()->toIso8601String(),
+                'context_snapshot' => $context->toArray(),
+            ]),
+        ]);
     }
 
     /**
